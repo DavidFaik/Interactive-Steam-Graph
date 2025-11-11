@@ -27,8 +27,10 @@ class InteractiveStreamGraph extends Component {
     
     // Define the LLM model names to visualize
     const llmModels = ["GPT-4", "Gemini", "PaLM-2", "Claude", "LLaMA-3.1"];
+    
+    // Write the D3.js code to create the interactive streamgraph visualization here
 
-    // Define colors for each model
+    // Define colors
     const colors = {
       "GPT-4": "#e41a1c",
       "Gemini": "#377eb8",
@@ -41,7 +43,7 @@ class InteractiveStreamGraph extends Component {
     d3.select(this.svgRef.current).selectAll("*").remove();
     d3.select(this.tooltipRef.current).selectAll("*").remove();
 
-    // Set up dimensions - increased margins for better spacing
+    // Set up dimensions
     const margin = { top: 20, right: 220, bottom: 60, left: 80 };
     const width = 600 - margin.left - margin.right;
     const height = 500 - margin.top - margin.bottom;
@@ -54,7 +56,7 @@ class InteractiveStreamGraph extends Component {
     const g = svg.append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    // Prepare data for stacking
+    // Prepare data
     const data = chartData.map(d => {
       const obj = { date: d.Date };
       llmModels.forEach(model => {
@@ -68,7 +70,7 @@ class InteractiveStreamGraph extends Component {
       .domain(d3.extent(data, d => d.date))
       .range([0, width]);
 
-    // Stack the data
+    // Stack data
     const stack = d3.stack()
       .keys(llmModels)
       .order(d3.stackOrderNone)
@@ -76,7 +78,7 @@ class InteractiveStreamGraph extends Component {
 
     const stackedData = stack(data);
 
-    // Calculate y domain (min and max of stacked values)
+    // Calculate y 
     const yMin = d3.min(stackedData, d => d3.min(d, v => v[0]));
     const yMax = d3.max(stackedData, d => d3.max(d, v => v[1]));
 
@@ -91,7 +93,7 @@ class InteractiveStreamGraph extends Component {
       .y1(d => yScale(d[1]))
       .curve(d3.curveBasis);
 
-    // Draw streamgraph paths
+    // Draw streamgraph 
     g.selectAll(".stream")
       .data(stackedData)
       .enter()
@@ -109,7 +111,7 @@ class InteractiveStreamGraph extends Component {
         hideTooltip();
       });
 
-    // Add x-axis with better spacing
+    // Add x-axis
     const xAxis = d3.axisBottom(xScale)
       .tickFormat(d3.timeFormat("%b"))
       .tickPadding(8);
@@ -118,7 +120,7 @@ class InteractiveStreamGraph extends Component {
       .attr("transform", `translate(0,${height})`)
       .call(xAxis);
     
-    // Style x-axis labels with better spacing
+    // Style x-axis
     xAxisGroup.selectAll("text")
       .style("text-anchor", "middle")
       .attr("dy", "0.5em");
@@ -128,12 +130,11 @@ class InteractiveStreamGraph extends Component {
       .style("stroke", "#000");
 
 
-    // Create legend - order should match visual stacking (top to bottom = reverse of array)
-    // Positioned with more spacing from the graph
+    // Create legend
     const legend = svg.append("g")
       .attr("transform", `translate(${width + margin.left + 30}, ${margin.top})`);
 
-    // Reverse the models array for legend to match visual order (top to bottom)
+    // Fix order
     const legendModels = [...llmModels].reverse();
 
     const legendItems = legend.selectAll(".legend-item")
@@ -155,7 +156,7 @@ class InteractiveStreamGraph extends Component {
       .style("font-size", "12px")
       .text(d => d);
 
-    // Tooltip functions - enhanced visibility
+    // Tooltip
       const tooltip = d3.select(this.tooltipRef.current)
         .style("position", "absolute")
         .style("visibility", "hidden")
@@ -173,7 +174,6 @@ class InteractiveStreamGraph extends Component {
     function showTooltip(event, d) {
       const model = d.key;
       
-      // Only rebuild tooltip if model changed
       if (currentModel !== model) {
         currentModel = model;
         const modelData = data.map(row => ({
@@ -181,17 +181,16 @@ class InteractiveStreamGraph extends Component {
           value: row[model]
         }));
 
-        // Calculate tooltip dimensions - larger for better visibility
+        // Tooltip dimensions
         const tooltipWidth = 280;
         const tooltipHeight = 200;
         const tooltipMargin = { top: 25, right: 25, bottom: 35, left: 50 };
         const chartWidth = tooltipWidth - tooltipMargin.left - tooltipMargin.right;
         const chartHeight = tooltipHeight - tooltipMargin.top - tooltipMargin.bottom;
 
-        // Clear previous content
         tooltip.html("");
 
-        // Create tooltip SVG
+        // Tooltip SVG
         const tooltipSvg = tooltip.append("svg")
           .attr("width", tooltipWidth)
           .attr("height", tooltipHeight);
@@ -220,7 +219,7 @@ class InteractiveStreamGraph extends Component {
           .attr("height", d => chartHeight - tooltipYScale(d.value))
           .attr("fill", colors[model]);
 
-        // Add x-axis to tooltip - larger and more visible
+        // Tooltip x-axis
         const tooltipXAxis = d3.axisBottom(tooltipXScale)
           .tickFormat(d3.timeFormat("%b"));
         const xAxisGroup = tooltipG.append("g")
@@ -235,7 +234,7 @@ class InteractiveStreamGraph extends Component {
           .style("stroke", "#333")
           .style("stroke-width", "1.5px");
 
-        // Add y-axis to tooltip - larger and more visible
+        // Tooltip y-axis
         const tooltipYAxis = d3.axisLeft(tooltipYScale);
         const yAxisGroup = tooltipG.append("g")
           .call(tooltipYAxis);
@@ -249,14 +248,14 @@ class InteractiveStreamGraph extends Component {
           .style("stroke-width", "1.5px");
       }
 
-      // Position tooltip
+
       updateTooltip(event, d);
     }
 
     function updateTooltip(event, d) {
         const rect = containerNode.getBoundingClientRect();
-        const left = event.clientX - rect.left; // align x with cursor
-        const top = event.clientY - rect.top + 12; // slightly below cursor
+        const left = event.clientX - rect.left;
+        const top = event.clientY - rect.top + 12; 
 
         tooltip
           .style("left", left + "px")
@@ -271,7 +270,6 @@ class InteractiveStreamGraph extends Component {
   }
 
   render() {
-    // Add a top margin to move the chart below the top grey bar
     return (
       <div style={{ position: "relative", marginTop: "100px" }}>
         <svg ref={this.svgRef} className="svg_parent"></svg>
