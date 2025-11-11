@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/Interactive-Steam-Graph/static/css/main.0fe98b54.css",
+    "main.js": "/Interactive-Steam-Graph/static/js/main.81ef7a22.js",
+    "index.html": "/Interactive-Steam-Graph/index.html",
+    "main.0fe98b54.css.map": "/Interactive-Steam-Graph/static/css/main.0fe98b54.css.map",
+    "main.81ef7a22.js.map": "/Interactive-Steam-Graph/static/js/main.81ef7a22.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.0fe98b54.css",
+    "static/js/main.81ef7a22.js"
+  ]
+}
